@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/widgets/badge.dart';
+import 'package:shop/widgets/app_drawer.dart';
+import '../screens/cart_screen.dart';
+import '../widgets/badge.dart';
 import '../Provider/product.dart';
 import '../widgets/product_item.dart';
 import '../dummy_data.dart';
@@ -29,9 +31,27 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
     return Scaffold(
       appBar: AppBar(
+         iconTheme: new IconThemeData(color: Colors.white),
         title: Text('Home', style: Theme.of(context).textTheme.title),
         centerTitle: true,
         actions: <Widget>[
+          Consumer<Cart>(
+            builder: (_, carData, ch) => Badge(
+              color: Colors.red,
+              child: ch,
+              value: carData.itemCount.toString(),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.shopping_cart,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
+            ),
+          ),
+
           PopupMenuButton(
             icon: Icon(
               Icons.more_vert,
@@ -50,7 +70,6 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
               print(selectedValue);
             },
-            
             itemBuilder: (_) => [
               PopupMenuItem(
                 child: Text('Only Favorite'),
@@ -64,22 +83,10 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ),
 
           //use Cart provider
-
-          Consumer<Cart>(
-
-            builder: (_, carData, ch) => Badge(
-             color: Colors.red,
-             child: ch,
-               value: carData.itemCount.toString(),
-            ),
-             child: IconButton(
-                icon: Icon(Icons.shopping_cart),
-                onPressed: () {},
-              ),
-          )
         ],
       ),
       body: ProductOverviewGrid(_showOnlyFavorite),
+      drawer: AppDrawer(),
     );
   }
 }

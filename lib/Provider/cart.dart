@@ -15,13 +15,54 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  Map<String, CartItem> _items={};
+  Map<String, CartItem> _items = {};
+
   Map<String, CartItem> get item {
     return {..._items};
   }
 
-  int get itemCount{
-return _items.length;
+  int get itemCount {
+    return _items.length;
+  }
+
+  double get totalAmount {
+    double total = 0.0;
+    _items.forEach((key, cart) {
+      total += cart.price * cart.quantity.toDouble();
+    });
+
+    return total;
+  }
+
+  void undo(String productId) {
+    if (!_items.containsKey(productId)) {
+      return;
+    }
+    if (_items[productId].quantity > 1) {
+      _items.update(
+        productId,
+        (excistingCartItem) => CartItem(
+          id: excistingCartItem.id,
+          title: excistingCartItem.title,
+          price: excistingCartItem.price,
+          quantity: excistingCartItem.quantity - 1,
+        ),
+      );
+    }
+    else{
+      _items.remove(productId);
+    }
+    notifyListeners();
+  }
+
+  void removeItems(String productID) {
+    _items.remove(productID);
+    notifyListeners();
+  }
+
+  void clear() {
+    _items = {};
+    notifyListeners();
   }
 
   void addItem(String productId, double price, String title) {
