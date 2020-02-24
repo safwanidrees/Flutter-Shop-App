@@ -24,7 +24,30 @@ class ProductOverviewScreen extends StatefulWidget {
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   List<Product> loadedProduct = shopProducts;
   var _showOnlyFavorite = false;
+  var _init=true;
+  var _isLoading=false;
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
+  @override
+  void didChangeDependencies() {
+    if(_init){
+      setState(() {
+        _isLoading=true;
+      });
+      Provider.of<Products>(context).fetchProduct().then((_){
+        setState(() {
+          _isLoading=false;
+        });
+      });
+
+    }
+    _init=false;
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
     final productContainer = Provider.of<Products>(context, listen: false);
@@ -85,7 +108,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           //use Cart provider
         ],
       ),
-      body: ProductOverviewGrid(_showOnlyFavorite),
+      body:_isLoading ? Center(child: CircularProgressIndicator(),) : ProductOverviewGrid(_showOnlyFavorite),
       drawer: AppDrawer(),
     );
   }
