@@ -18,11 +18,13 @@ class Products with ChangeNotifier {
   }
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   Future<void> productAdd(Product product) async {
-    final url = 'https://flutterstore-f9ed2.firebaseio.com/products.json?auth=$authToken';
+    final url =
+        'https://flutterstore-f9ed2.firebaseio.com/products.json?auth=$authToken';
     try {
       final responce = await http.post(
         url,
@@ -30,7 +32,6 @@ class Products with ChangeNotifier {
           'title': product.title,
           'description': product.description,
           'price': product.price,
-          'isFavourite': product.isFavorite,
           'imageUrl': product.imageUrl,
         }),
       );
@@ -51,7 +52,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchProduct() async {
-    final url =
+    var url =
         'https://flutterstore-f9ed2.firebaseio.com/products.json?auth=$authToken';
     try {
       final responce = await http.get(url);
@@ -60,13 +61,19 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return null;
       }
+
+      url =
+          'https://flutterstore-f9ed2.firebaseio.com/userFavourite/$userId.json?auth=$authToken';
+      final favouriteresponce = await http.get(url);
+      final favouriteData = json.decode(favouriteresponce.body);
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
             id: prodId,
             title: prodData['title'],
             description: prodData['description'],
             price: prodData['price'],
-            isFavorite: prodData['isFavourite'],
+            isFavorite:
+                favouriteData == null ? false : favouriteData[prodId] ?? false,
             imageUrl: prodData['imageUrl']));
       });
       _items = loadedProducts;
@@ -120,7 +127,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> removeProduct(String id) async {
-    final url = 'https://flutterstore-f9ed2.firebaseio.com/products/$id.json?auth=$authToken';
+    final url =
+        'https://flutterstore-f9ed2.firebaseio.com/products/$id.json?auth=$authToken';
     final excistingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var excistingProduct = _items[excistingProductIndex];
 
