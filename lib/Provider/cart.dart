@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CartItem {
   final String id;
@@ -48,8 +50,7 @@ class Cart with ChangeNotifier {
           quantity: excistingCartItem.quantity - 1,
         ),
       );
-    }
-    else{
+    } else {
       _items.remove(productId);
     }
     notifyListeners();
@@ -65,7 +66,19 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void addItem(String productId, double price, String title) {
+  void addItem(
+      String productId, double price, String title, )  {
+    // const url = 'https://flutterstore-f9ed2.firebaseio.com/carts.json';
+
+    // final responce = await http.patch(
+    //   url,
+    //   body: json.encode({
+    //     'title': cartItem.title,
+    //     'price': cartItem.price,
+    //     'quauntity': cartItem.quantity
+    //   }),
+    // );
+
     if (_items.containsKey(productId)) {
       //chanage quatity
       _items.update(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/Provider/auth.dart';
 import 'package:shop/Provider/cart.dart';
 import 'package:shop/screens/product_detail_screen.dart';
 import '../Provider/product.dart';
@@ -9,10 +10,19 @@ class ProductItem extends StatelessWidget {
   // final String title;
   // final String imageUrl;
   // ProductItem(this.id, this.title, this.imageUrl);
+
+  //  var _edittedProduct = CartItem(
+  //   id: null,
+  //   title: '',
+  //   price: 0,
+  //   quantity:0
+   
+  // );
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context);
+    final auth=Provider.of<Auth>(context);
     //it can get data from product class
 
 //we alsos use consumer instead of provider
@@ -46,7 +56,7 @@ class ProductItem extends StatelessWidget {
           leading: Consumer<Product>(
             builder: (ctx, datas, child) => IconButton(
               onPressed: () {
-                datas.istoggleFavorite();
+                datas.istoggleFavorite(auth.token);
               },
               icon: Icon(
                 datas.isFavorite ? Icons.favorite : Icons.favorite_border,
